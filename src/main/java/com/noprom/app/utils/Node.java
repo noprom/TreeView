@@ -14,6 +14,13 @@ public class Node {
     // 根节点
     private int pid = 0;
 
+    public Node(){}
+    public Node(int id, int pid, String level) {
+        this.id = id;
+        this.pid = pid;
+        this.level = level;
+    }
+
     // 树的层级
     private int level;
 
