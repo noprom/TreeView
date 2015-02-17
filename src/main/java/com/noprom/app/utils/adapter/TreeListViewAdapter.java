@@ -18,11 +18,11 @@ import java.util.List;
  */
 public abstract class TreeListViewAdapter<T> extends BaseAdapter {
 
-    private Context mContext;
-    private List<Node> mAllNodes;
-    private List<Node> mVisableNodes;
-    private LayoutInflater mInflater;
-    private ListView mTree;
+    protected Context mContext;
+    protected List<Node> mAllNodes;
+    protected List<Node> mVisableNodes;
+    protected LayoutInflater mInflater;
+    protected ListView mTree;
 
     private interface OnTreeNodeClickListener {
         void onClick(Node node, int position);
