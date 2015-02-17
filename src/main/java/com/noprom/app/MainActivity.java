@@ -25,7 +25,7 @@ public class MainActivity extends Activity {
         mTree = (ListView) findViewById(R.id.id_listview);
         initDatas();
         try {
-            mAdapter = new SimpleTreeViewAdapter<FileBean>(mTree, this,mDatas,1);
+            mAdapter = new SimpleTreeViewAdapter<FileBean>(mTree, this,mDatas,0);
             mTree.setAdapter(mAdapter);
         } catch (IllegalAccessException e) {
             e.printStackTrace();

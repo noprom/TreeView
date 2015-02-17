@@ -1,5 +1,7 @@
 package com.noprom.app.utils;
 
+import android.util.Log;
+
 import com.noprom.app.R;
 import com.noprom.app.utils.annotation.TreeNodeId;
 import com.noprom.app.utils.annotation.TreeNodeLabel;
@@ -35,29 +37,27 @@ public class TreeHelper {
             int pid = -1;
             String label = null;
 
-            node = new Node();
             Class clazz = t.getClass();
             Field[] fields = clazz.getDeclaredFields();
             for (Field field : fields) {
-                if (field.getAnnotations(TreeNodeId.class) != null) {
+                if (field.getAnnotation(TreeNodeId.class) != null) {
                     field.setAccessible(true);
                     id = field.getInt(t);
                 }
 
-                if (field.getAnnotations(TreeNodePid.class) != null) {
+                if (field.getAnnotation(TreeNodePid.class) != null) {
                     field.setAccessible(true);
                     pid = field.getInt(t);
                 }
 
-                if (field.getAnnotations(TreeNodeLabel.class) != null) {
+                if (field.getAnnotation(TreeNodeLabel.class) != null) {
                     field.setAccessible(true);
                     label = (String) field.get(t);
                 }
-
-                node = new Node(id, pid, label);
-                nodes.add(node);
             }
 
+            node = new Node(id, pid, label);
+            nodes.add(node);
         }
 
         // 设置Node之间的关联关系
@@ -114,6 +114,7 @@ public class TreeHelper {
         for (Node node : rootNodes) {
             addNode(result, node, defaultExpandLevel, 1);
         }
+        Log.d("TAG","size = "+result.size());
         return result;
     }
 
@@ -143,13 +144,14 @@ public class TreeHelper {
 
     /**
      * 过滤出所有可见的节点
+     *
      * @param nodes
      * @return
      */
-    public static List<Node> filterVisibleNodes(List<Node> nodes){
+    public static List<Node> filterVisibleNodes(List<Node> nodes) {
         List<Node> result = new ArrayList<Node>();
-        for(Node node:nodes){
-            if(node.isRoot() || node.isParentExpand()){
+        for (Node node : nodes) {
+            if (node.isRoot() || node.isParentExpand()) {
                 setNodeIcon(node);
                 result.add(node);
             }
@@ -171,6 +173,7 @@ public class TreeHelper {
                 root.add(node);
             }
         }
+        Log.d("TAG","root size = "+root.size());
         return root;
     }
 }

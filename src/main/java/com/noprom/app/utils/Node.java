@@ -15,10 +15,10 @@ public class Node {
     private int pid = 0;
 
     public Node(){}
-    public Node(int id, int pid, String level) {
+    public Node(int id, int pid, String name) {
         this.id = id;
         this.pid = pid;
-        this.level = level;
+        this.name = name;
     }
 
     // 树的层级
