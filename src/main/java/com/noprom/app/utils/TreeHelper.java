@@ -1,5 +1,6 @@
 package com.noprom.app.utils;
 
+import com.noprom.app.R;
 import com.noprom.app.utils.annotation.TreeNodeId;
 import com.noprom.app.utils.annotation.TreeNodeLabel;
 import com.noprom.app.utils.annotation.TreeNodePid;
@@ -14,6 +15,8 @@ import java.util.List;
  */
 public class TreeHelper {
 
+
+    private static Node nodeIcon;
 
     /**
      * 将数据转化为节点
@@ -30,32 +33,144 @@ public class TreeHelper {
         for (T t : datas) {
             int id = -1;
             int pid = -1;
-            String label =null;
+            String label = null;
 
             node = new Node();
             Class clazz = t.getClass();
             Field[] fields = clazz.getDeclaredFields();
             for (Field field : fields) {
-                if (field.getAnnotations(TreeNodeId.class)!=null){
+                if (field.getAnnotations(TreeNodeId.class) != null) {
                     field.setAccessible(true);
                     id = field.getInt(t);
                 }
 
-                if (field.getAnnotations(TreeNodePid.class)!=null){
+                if (field.getAnnotations(TreeNodePid.class) != null) {
                     field.setAccessible(true);
                     pid = field.getInt(t);
                 }
 
-                if (field.getAnnotations(TreeNodeLabel.class)!=null){
+                if (field.getAnnotations(TreeNodeLabel.class) != null) {
                     field.setAccessible(true);
                     label = (String) field.get(t);
                 }
 
-                node = new Node(id,pid,label);
+                node = new Node(id, pid, label);
                 nodes.add(node);
             }
 
         }
+
+        // 设置Node之间的关联关系
+        for (int i = 0; i < nodes.size(); i++) {
+            Node n = nodes.get(i);
+            for (int j = 0; j < nodes.size(); j++) {
+                Node m = nodes.get(j);
+                if (m.getPid() == n.getId()) {
+                    n.getChildren().add(m);
+                    m.setParent(n);
+                } else if (m.getId() == n.getPid()) {
+                    m.getChildren().add(n);
+                    n.setParent(m);
+                }
+            }
+        }
+
+        // 设置图片
+        for (Node n : nodes) {
+            setNodeIcon(n);
+        }
         return nodes;
+    }
+
+    /**
+     * 为节点n设置图标
+     *
+     * @param n
+     */
+    private static void setNodeIcon(Node n) {
+        if (n.getChildren().size() > 0 && n.isExpand()) {
+            n.setIcon(R.drawable.tree_ex);
+        } else if (n.getChildren().size() > 0 && !n.isExpand()) {
+            n.setIcon(R.drawable.tree_ec);
+        } else {
+            n.setIcon(-1);
+        }
+    }
+
+    /**
+     * 为用户数据排序
+     *
+     * @param datas
+     * @param <T>
+     * @return
+     */
+    public static <T> List<Node> getSortedNodes(List<T> datas, int defaultExpandLevel) throws IllegalAccessException {
+        List<Node> result = new ArrayList<Node>();
+        List<Node> nodes = convertDatasToNodes(datas);
+
+        // 获取树的根节点
+        List<Node> rootNodes = getRootNodes(nodes);
+
+        for (Node node : rootNodes) {
+            addNode(result, node, defaultExpandLevel, 1);
+        }
+        return result;
+    }
+
+
+    /**
+     * 将一个节点的所有孩子节点放入result
+     * 递归实现
+     *
+     * @param result
+     * @param node
+     * @param defaultExpandLevel
+     * @param currentLevel
+     */
+    private static void addNode(List<Node> result, Node node, int defaultExpandLevel, int currentLevel) {
+        result.add(node);
+        if (defaultExpandLevel >= currentLevel) {
+            node.setExpand(true);
+        }
+        if (node.isLeaf()) return;
+
+        for (int i = 0; i < node.getChildren().size(); i++) {
+            addNode(result, node.getChildren().get(i), defaultExpandLevel, currentLevel + 1);
+        }
+
+    }
+
+
+    /**
+     * 过滤出所有可见的节点
+     * @param nodes
+     * @return
+     */
+    public static List<Node> filterVisibleNodes(List<Node> nodes){
+        List<Node> result = new ArrayList<Node>();
+        for(Node node:nodes){
+            if(node.isRoot() || node.isParentExpand()){
+                setNodeIcon(node);
+                result.add(node);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 获得所有的根节点
+     *
+     * @param nodes
+     * @return
+     */
+    private static List<Node> getRootNodes(List<Node> nodes) {
+        List<Node> root = new ArrayList<Node>();
+
+        for (Node node : nodes) {
+            if (node.isRoot()) {
+                root.add(node);
+            }
+        }
+        return root;
     }
 }
