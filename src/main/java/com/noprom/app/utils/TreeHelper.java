@@ -79,6 +79,15 @@ public class TreeHelper {
         for (Node n : nodes) {
             setNodeIcon(n);
         }
+        Log.d("TAG","nodes size = "+nodes.size());
+
+        for(int i=0;i<nodes.size();i++){
+            node = nodes.get(i);
+            Log.d("TAG","node children size = "+node.getChildren().size());
+            Log.d("TAG","node child i = "+i+" & id = "+node.getId()+" &pid = "+node.getPid());
+
+        }
+
         return nodes;
     }
 
@@ -110,11 +119,13 @@ public class TreeHelper {
 
         // 获取树的根节点
         List<Node> rootNodes = getRootNodes(nodes);
+        Log.d("TAG","rootNodes size = "+rootNodes.size());
 
         for (Node node : rootNodes) {
+            Log.d("TAG","node child count = "+ node.getChildren().size());
             addNode(result, node, defaultExpandLevel, 1);
         }
-        Log.d("TAG","size = "+result.size());
+        Log.d("TAG","getSortedNodes size = "+result.size());
         return result;
     }
 
@@ -134,8 +145,8 @@ public class TreeHelper {
             node.setExpand(true);
         }
         if (node.isLeaf()) return;
-
-        for (int i = 0; i < node.getChildren().size(); i++) {
+        int childCount = node.getChildren().size();
+        for (int i = 0; i < childCount; i++) {
             addNode(result, node.getChildren().get(i), defaultExpandLevel, currentLevel + 1);
         }
 
@@ -173,7 +184,6 @@ public class TreeHelper {
                 root.add(node);
             }
         }
-        Log.d("TAG","root size = "+root.size());
         return root;
     }
 }
