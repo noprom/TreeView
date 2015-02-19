@@ -24,7 +24,7 @@ public abstract class TreeListViewAdapter<T> extends BaseAdapter {
     protected LayoutInflater mInflater;
     protected ListView mTree;
 
-    private interface OnTreeNodeClickListener {
+    public interface OnTreeNodeClickListener {
         void onClick(Node node, int position);
     }
 

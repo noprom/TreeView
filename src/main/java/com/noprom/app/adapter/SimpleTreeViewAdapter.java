@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.noprom.app.R;
 import com.noprom.app.utils.Node;
+import com.noprom.app.utils.TreeHelper;
 import com.noprom.app.utils.adapter.TreeListViewAdapter;
 
 import java.util.List;
@@ -25,19 +26,19 @@ public class SimpleTreeViewAdapter<T> extends TreeListViewAdapter<T> {
     public View getConvertView(Node node, int position, View convertView, ViewGroup parent) {
 
         ViewHolder holder = null;
-        if(convertView == null){
-            convertView = mInflater.inflate(R.layout.list_item,parent,false);
+        if (convertView == null) {
+            convertView = mInflater.inflate(R.layout.list_item, parent, false);
             holder = new ViewHolder();
             holder.mIcon = (ImageView) convertView.findViewById(R.id.id_item_icon);
             holder.mText = (TextView) convertView.findViewById(R.id.id_item_text);
             convertView.setTag(holder);
-        }else{
+        } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        if(node.getIcon() == -1){
+        if (node.getIcon() == -1) {
             holder.mIcon.setVisibility(View.INVISIBLE);
-        }else{
+        } else {
             holder.mIcon.setVisibility(View.VISIBLE);
             holder.mIcon.setImageResource(node.getIcon());
         }
@@ -47,8 +48,27 @@ public class SimpleTreeViewAdapter<T> extends TreeListViewAdapter<T> {
         return convertView;
     }
 
+    /**
+     * 动态插入节点
+     *
+     * @param position
+     * @param s
+     */
+    public void addExtraNode(int position, String s) {
+        Node node = mVisableNodes.get(position);
+        int indexOf = mAllNodes.indexOf(node);
 
-    private class ViewHolder{
+        Node extraNode = new Node(-1, node.getId(), s);
+        extraNode.setParent(node);
+        node.getChildren().add(extraNode);
+
+        mAllNodes.add(indexOf + 1, extraNode);
+        mVisableNodes = TreeHelper.filterVisibleNodes(mAllNodes);
+        notifyDataSetChanged();
+    }
+
+
+    private class ViewHolder {
         ImageView mIcon;
         TextView mText;
     }
